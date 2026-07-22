@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Screen food and energy opportunities on the same land using ZIP-level context, agrivoltaic cases, horticultural guidance, and planner review questions.">
+  <meta name="theme-color" content="#0c1935">
+  <title>Local Foods, Local Energy Toolkit</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the screening tool</a>
+
+  <header class="hero">
+    <div class="hero-photo" aria-hidden="true"></div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="project-ribbon">
+      <span>Local Foods · Local Energy</span>
+      <span>Food and energy planning on the same land</span>
+    </div>
+    <div class="hero-content">
+      <p class="eyebrow">Agrivoltaics and agroenergy screening toolkit</p>
+      <h1>Put one acre to work twice.</h1>
+      <p class="hero-copy">Turn a ZIP code and a few site facts into a transparent conversation about climate, crops, system scale, comparable projects, and the questions planners should ask next.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#screening">Screen a site</a>
+        <button class="button button-ghost" id="loadDanville" type="button">Load Danville demo</button>
+        <span class="hero-stat"><strong id="zipCount">40,502</strong> ZIP profiles</span>
+      </div>
+    </div>
+    <p class="photo-credit">Roundabout Meadows Community Farm · Hugh Kenny / Piedmont Environmental Council</p>
+  </header>
+
+  <section class="photo-ribbon" aria-label="Dual-use project examples">
+    <div class="photo-panel photo-roundabout"><span>Community farm</span></div>
+    <div class="photo-panel photo-firebird"><span>Irrigation + training</span></div>
+    <div class="photo-panel photo-growing"><span>Food access + education</span></div>
+  </section>
+
+  <main id="main">
+    <section class="intro-band">
+      <div>
+        <p class="eyebrow">A planning screen, not a permit decision</p>
+        <h2>Start with purpose. Then test fit.</h2>
+      </div>
+      <p>The toolkit keeps agricultural operations at the center. It organizes location data, workbook formulas, case evidence, and implementation questions without pretending that a ZIP-level screen replaces site engineering or local review.</p>
+    </section>
+
+    <section class="tool-layout" id="screening">
+      <aside class="controls" aria-label="Site screening inputs">
+        <div class="controls-heading">
+          <p class="eyebrow">Your site</p>
+          <h2>Build the screening profile</h2>
+          <p id="profileHint">Danville demo values are loaded. Replace them with your site.</p>
+        </div>
+
+        <form id="profileForm">
+          <div class="field-row field-row-two">
+            <label>
+              <span>ZIP code</span>
+              <input id="zipInput" name="zip" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" value="24540" required>
+            </label>
+            <label>
+              <span>Site area (sq ft)</span>
+              <input id="siteArea" name="siteArea" type="number" min="100" step="100" value="1000" required>
+            </label>
+          </div>
+
+          <label>
+            <span>Energy + farm system</span>
+            <select id="systemType" name="systemType">
+              <option value="solar">Solar / agrivoltaics</option>
+              <option value="wind">Wind</option>
+              <option value="geothermal">Geothermal</option>
+              <option value="biofuels">Biofuels / biomass</option>
+              <option value="hydropower">Water / micro-hydro</option>
+              <option value="manual">Manual / human power</option>
+              <option value="wood">Wood / charcoal</option>
+              <option value="oilgas">Oil / gas</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Your role</span>
+            <select id="role" name="role">
+              <option>Planner / reviewer</option>
+              <option>Landowner</option>
+              <option>Farmer</option>
+              <option>Educator</option>
+              <option>Community partner</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Agricultural use</span>
+            <select id="farmUse" name="farmUse">
+              <option value="Small Scale Crops">General crops</option>
+              <option value="Micro/DIY">Micro / DIY</option>
+              <option value="Pollinators">Pollinators</option>
+              <option value="Silvavoltaics">Trees / silvavoltaics</option>
+              <option value="Solar Grazing">Solar grazing</option>
+              <option value="Vitivoltaics">Grapes / vitivoltaics</option>
+              <option value="Aquavoltaic">Aquaculture</option>
+            </select>
+          </label>
+
+          <div class="field-row field-row-two">
+            <label>
+              <span>Utility account</span>
+              <select id="consumerType" name="consumerType">
+                <option value="commercial">Commercial</option>
+                <option value="industrial">Industrial</option>
+                <option value="residential">Residential</option>
+              </select>
+            </label>
+            <label>
+              <span>Community setting</span>
+              <select id="communityType" name="communityType">
+                <option>Rural</option>
+                <option>Suburban</option>
+                <option>Urban</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            <span>Intended energy use</span>
+            <select id="energyUse" name="energyUse">
+              <option>Local use</option>
+              <option>Sell to grid</option>
+              <option>Local use and sell excess</option>
+            </select>
+          </label>
+
+          <fieldset>
+            <legend>Inside a town or city?</legend>
+            <label class="radio"><input type="radio" name="insideLocality" value="yes" checked> Yes</label>
+            <label class="radio"><input type="radio" name="insideLocality" value="no"> No</label>
+          </fieldset>
+
+          <button class="button button-primary button-full" type="submit">Screen this site</button>
+          <button class="text-button" id="resetProfile" type="button">Reset profile</button>
+        </form>
+      </aside>
+
+      <section class="workspace" aria-live="polite">
+        <div id="message" class="message" role="status"></div>
+
+        <section id="resultHeader" class="result-header">
+          <div>
+            <p class="eyebrow">Site conversation</p>
+            <h2 id="placeTitle">Danville, Virginia</h2>
+            <p id="placeSummary">ZIP 24540 · Pittsylvania County · EPA Region 3</p>
+          </div>
+          <div class="result-actions">
+            <button id="shareScreen" class="button button-secondary" type="button">Copy screen link</button>
+            <button id="downloadMemo" class="button button-secondary" type="button">Download memo</button>
+          </div>
+        </section>
+
+        <section class="metric-grid" aria-label="Screening metrics">
+          <div><span id="metricZone">7b</span><label>USDA zone</label></div>
+          <div><span id="metricClimate">Temperate</span><label>horticulture climate</label></div>
+          <div><span id="metricSolar">4.51</span><label>solar GHI</label></div>
+          <div><span id="metricPanels">46</span><label>panel screen</label></div>
+          <div><span id="metricEnergy">155</span><label>MWh / year</label></div>
+        </section>
+
+        <p class="guardrail"><strong>Screening aid:</strong> location matches and calculations organize early questions. Verify all conditions with the landowner, utility, engineer, agricultural operator, and local government.</p>
+
+        <nav class="tabs" aria-label="Screening results">
+          <button class="tab is-active" type="button" data-tab="snapshot" aria-selected="true">Snapshot</button>
+          <button class="tab" type="button" data-tab="horticulture" aria-selected="false">Horticulture</button>
+          <button class="tab" type="button" data-tab="cases" aria-selected="false">Cases</button>
+          <button class="tab" type="button" data-tab="funding" aria-selected="false">Funding + resources</button>
+          <button class="tab" type="button" data-tab="planner" aria-selected="false">Planner screen</button>
+          <button class="tab" type="button" data-tab="method" aria-selected="false">Method</button>
+        </nav>
+
+        <section class="tab-panel is-active" data-panel="snapshot">
+          <div id="snapshotCards" class="card-grid"></div>
+          <section class="five-cs">
+            <div class="section-heading">
+              <p class="eyebrow">The 5Cs</p>
+              <h3>Five questions keep the technical conversation honest.</h3>
+            </div>
+            <div id="fiveCs" class="five-c-grid"></div>
+          </section>
+        </section>
+
+        <section class="tab-panel" data-panel="horticulture" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">Climate + crops</p>
+            <h3 id="horticultureTitle">Temperate agrivoltaics</h3>
+          </div>
+          <div class="narrative-grid">
+            <article><h4>Climate context</h4><p id="climateDetails"></p></article>
+            <article><h4>Workbook findings</h4><p id="climateFindings"></p></article>
+          </div>
+          <article class="planting-panel">
+            <h4>Potential planting and farm uses</h4>
+            <div id="plantingTags" class="tag-list"></div>
+          </article>
+        </section>
+
+        <section class="tab-panel" data-panel="cases" hidden>
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Comparable projects</p><h3>Look for design lessons, not copies.</h3></div>
+            <label class="compact-field"><span>Show</span><select id="caseLimit"><option value="6">6 cases</option><option value="12">12 cases</option><option value="all">All cases</option></select></label>
+          </div>
+          <div id="caseResults" class="case-grid"></div>
+        </section>
+
+        <section class="tab-panel" data-panel="funding" hidden>
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Workbook resource list</p><h3>Start local, then verify every program.</h3></div>
+            <label class="compact-field"><span>Filter</span><input id="fundingSearch" type="search" placeholder="grant, tax credit, loan"></label>
+          </div>
+          <p class="notice">Program names and links come from the approved workbook. Availability, eligibility, deadlines, and incentives can change. Open the official source before relying on a record.</p>
+          <div id="fundingResults" class="resource-list"></div>
+          <div class="section-heading section-heading-spaced"><p class="eyebrow">Planning + technical resources</p><h3>Go deeper on design, zoning, and assistance.</h3></div>
+          <div id="resourceResults" class="resource-list"></div>
+        </section>
+
+        <section class="tab-panel" data-panel="planner" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">Development review</p>
+            <h3>Seven questions before conditions.</h3>
+          </div>
+          <div class="planner-progress"><span id="plannerCount">0 of 7</span><div><i id="plannerBar"></i></div><strong id="plannerStatus">Evidence not recorded</strong></div>
+          <div id="plannerQuestions" class="planner-list"></div>
+          <label class="notes-field"><span>Project notes</span><textarea id="projectNotes" rows="6" placeholder="Record evidence, missing information, responsible parties, and follow-up actions."></textarea></label>
+          <div class="planner-actions">
+            <button id="downloadPlannerMemo" class="button button-primary" type="button">Download screening memo</button>
+            <button id="printScreen" class="button button-secondary" type="button">Print screen</button>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-panel="method" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">Transparent method</p>
+            <h3>What the screen does—and does not do.</h3>
+          </div>
+          <div class="method-grid">
+            <article><h4>Location match</h4><p>The ZIP crosswalk supplies city, county, state, hardiness zone, climate, utility, electricity-rate, RTO, transmission-line, solar, geothermal, and wind context.</p></article>
+            <article><h4>Solar screen</h4><p><code>panels = floor(site area ÷ 21.5278216)</code></p><p><code>MWh = round(area × 0.09290304 × solar GHI × 365) ÷ 1000</code></p></article>
+            <article><h4>Case ranking</h4><p>Cases gain transparent points for state, climate, hardiness zone, agricultural use, and community-setting similarity. A high rank means “study this,” not “copy this.”</p></article>
+            <article><h4>Planning boundary</h4><p>The screen does not test parcel geometry, soils, wetlands, title, interconnection capacity, structural design, economics, tax treatment, or legal compliance.</p></article>
+          </div>
+          <div class="source-panel">
+            <h4>Primary method and policy references</h4>
+            <ul>
+              <li><a href="https://www.energy.gov/eere/solar/agrivoltaics-solar-and-agriculture-co-location" target="_blank" rel="noopener">U.S. Department of Energy: Agrivoltaics</a></li>
+              <li><a href="https://docs.nrel.gov/docs/fy22osti/83566.pdf" target="_blank" rel="noopener">NREL: The 5 Cs of Agrivoltaic Success Factors</a></li>
+              <li><a href="https://law.lis.virginia.gov/vacode/title10.1/chapter11.1/section10.1-1197.5/" target="_blank" rel="noopener">Virginia Code § 10.1-1197.5</a></li>
+              <li><a href="https://law.lis.virginia.gov/vacode/title15.2/chapter22/section15.2-2288.8/" target="_blank" rel="noopener">Virginia Code § 15.2-2288.8</a></li>
+              <li><a href="https://www.pecva.org/resources/publications/piedmont-view/the-friendliest-type-of-energy-generation-a-conversation-on-agrivoltaics/" target="_blank" rel="noopener">Piedmont Environmental Council: Roundabout Meadows</a></li>
+            </ul>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <img src="assets/epr-logo.png" alt="EPR, P.C.">
+      <p><strong>Local Foods, Local Energy Toolkit</strong><br>Workbook-derived public screening application.</p>
+    </div>
+    <p>Compiled July 2026 · Verify live programs, local rules, utility conditions, and site data before acting.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Local Foods, Local Energy Toolkit",
+  "short_name": "Food + Energy",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fbfaf7",
+  "theme_color": "#0c1935"
+}

@@ -2,6 +2,7 @@
 
 const DATA = window.LFLE_DATA || {};
 const ZIP_FIELDS = DATA.zipFields || [];
+const SOLAR_ASSUMPTIONS = Object.freeze({ landCoverageRatio: 0.35, moduleAreaSqFt: 21.5278216, moduleCapacityKw: 0.40, performanceRatio: 0.80 });
 const PLANNER_QUESTIONS = [
   ["purpose", "What is the project's purpose and scale?", "Name the agricultural function, energy function, users, and operating horizon."],
   ["operator", "What agricultural production continues—and who operates it?", "Identify the producer, lease or ownership structure, crops or livestock, and evidence of a commercial farm operation."],
@@ -13,7 +14,7 @@ const PLANNER_QUESTIONS = [
 ];
 
 const SYSTEM_LABELS = {
-  solar: "Solar / agrivoltaics",
+  solar: "Solar co-location / agrivoltaics",
   wind: "Wind",
   geothermal: "Geothermal",
   biofuels: "Biofuels / biomass",
@@ -50,6 +51,7 @@ const els = {
   metricClimate: document.getElementById("metricClimate"),
   metricSolar: document.getElementById("metricSolar"),
   metricPanels: document.getElementById("metricPanels"),
+  metricCapacity: document.getElementById("metricCapacity"),
   metricEnergy: document.getElementById("metricEnergy"),
   snapshotCards: document.getElementById("snapshotCards"),
   fiveCs: document.getElementById("fiveCs"),
@@ -59,6 +61,9 @@ const els = {
   plantingTags: document.getElementById("plantingTags"),
   caseResults: document.getElementById("caseResults"),
   caseLimit: document.getElementById("caseLimit"),
+  caseMapMarkers: document.getElementById("caseMapMarkers"),
+  mapCaseCount: document.getElementById("mapCaseCount"),
+  mapSummary: document.getElementById("mapSummary"),
   fundingSearch: document.getElementById("fundingSearch"),
   fundingResults: document.getElementById("fundingResults"),
   resourceResults: document.getElementById("resourceResults"),
@@ -167,11 +172,12 @@ function screenSite(updateUrl = false) {
   }
   const rate = selectedRate(place, inputs.consumerType);
   const solarScreen = inputs.system === "solar" && inputs.area > 0 && Number.isFinite(Number(place.solar_ghi));
-  const panels = solarScreen ? Math.floor(inputs.area / 21.5278216) : null;
-  const annualKwh = solarScreen ? Math.round(inputs.area * 0.09290304 * Number(place.solar_ghi) * 365) : null;
+  const panels = solarScreen ? Math.floor(inputs.area * SOLAR_ASSUMPTIONS.landCoverageRatio / SOLAR_ASSUMPTIONS.moduleAreaSqFt) : null;
+  const capacityKw = panels === null ? null : panels * SOLAR_ASSUMPTIONS.moduleCapacityKw;
+  const annualKwh = capacityKw === null ? null : capacityKw * Number(place.solar_ghi) * 365 * SOLAR_ASSUMPTIONS.performanceRatio;
   const annualMwh = annualKwh === null ? null : annualKwh / 1000;
   const annualValue = annualKwh !== null && rate !== null ? annualKwh * rate : null;
-  current = { inputs, place, rate, panels, annualKwh, annualMwh, annualValue };
+  current = { inputs, place, rate, panels, capacityKw, annualKwh, annualMwh, annualValue };
 
   els.placeTitle.textContent = [place.city, place.state].filter(Boolean).join(", ") || `ZIP ${inputs.zip}`;
   els.placeSummary.textContent = [`ZIP ${inputs.zip}`, place.county ? `${place.county} County` : "County not found", place.epa_region ? `EPA Region ${Number(place.epa_region)}` : null].filter(Boolean).join(" · ");
@@ -179,6 +185,7 @@ function screenSite(updateUrl = false) {
   els.metricClimate.textContent = place.horticulture_climate || "—";
   els.metricSolar.textContent = formatDecimal(place.solar_ghi, 2);
   els.metricPanels.textContent = panels === null ? "—" : number(panels);
+  els.metricCapacity.textContent = capacityKw === null ? "—" : formatDecimal(capacityKw, 1);
   els.metricEnergy.textContent = annualMwh === null ? "—" : formatDecimal(annualMwh, annualMwh < 10 ? 1 : 0);
   els.profileHint.textContent = `${els.placeTitle.textContent} is loaded. Adjust any input to rerun the screen.`;
 
@@ -198,7 +205,7 @@ function selectedRate(place, type) {
 
 function renderSnapshot() {
   if (!current) return;
-  const { inputs, place, rate, panels, annualMwh, annualValue } = current;
+  const { inputs, place, rate, panels, capacityKw, annualMwh, annualValue } = current;
   const transmission = place.nearest_high_voltage_kv
     ? `${place.nearest_high_voltage_kv} kV mapped line · ${place.nearest_high_voltage_owner || "owner not listed"}`
     : "No mapped line detail returned";
@@ -207,10 +214,10 @@ function renderSnapshot() {
     : "Check county zoning and building-code review.";
   const cards = [
     ["Location", [place.city, place.county ? `${place.county} County` : null, place.state].filter(Boolean).join(" · "), `USDA ${place.usda_zone || "not found"} · ${place.climate || "climate not found"}`],
-    ["Energy screen", annualMwh === null ? `${SYSTEM_LABELS[inputs.system]} selected` : `${formatDecimal(annualMwh, 1)} MWh / year`, annualMwh === null ? "The workbook provides no comparable area-based output formula for this system." : `${number(panels)} maximum-panel area screen; layout has not been tested.`],
+    ["Energy screen", annualMwh === null ? `${SYSTEM_LABELS[inputs.system]} selected` : `${formatDecimal(annualMwh, 1)} MWh / year`, annualMwh === null ? "No comparable area-based output formula is used for this system; complete a system-specific study." : `${number(panels)} illustrative 400 W modules · ${formatDecimal(capacityKw, 1)} kW DC · 35% land coverage · 80% performance.`],
     ["Utility context", place.utility_provider || "Utility not found", `${title(inputs.consumerType)} rate: ${rate === null ? "not found" : currency(rate, 3) + "/kWh"} · ${place.rto_label || place.rto_code || "RTO not found"}`],
     ["Transmission context", transmission, "Proximity and voltage do not establish interconnection capacity. Contact the utility or line owner."],
-    ["Estimated annual value", annualValue === null ? "Not calculated" : currency(annualValue, 0), annualValue === null ? "A workbook rate or solar output was unavailable." : `${inputs.energyUse}; before financing, test tariffs, load, curtailment, export rules, taxes, and degradation.`],
+    ["Illustrative gross electricity value", annualValue === null ? "Not calculated" : currency(annualValue, 0), annualValue === null ? "A utility rate or solar output was unavailable." : "Not profit, net revenue, lease income, or guaranteed bill savings. Export compensation may differ from the selected retail rate."],
     ["Local review path", zoning, "Confirm definitions, use permissions, setbacks, height, access, stormwater, agricultural continuity, monitoring, and decommissioning."],
   ];
   els.snapshotCards.innerHTML = cards.map(([titleText, value, note]) => `
@@ -219,7 +226,7 @@ function renderSnapshot() {
 
   const fiveCs = [
     ["Climate", `${place.climate || "Unknown"}; ${place.horticulture_climate || "horticulture class not found"}.`],
-    ["Configuration", inputs.system === "solar" ? `${number(panels || 0)}-panel area screen before access, spacing, height, and mounting.` : `${SYSTEM_LABELS[inputs.system]} requires a system-specific site study.`],
+    ["Configuration", inputs.system === "solar" ? `${number(panels || 0)} illustrative modules at 35% land coverage before access, spacing, height, mounting, and agricultural operations.` : `${SYSTEM_LABELS[inputs.system]} requires a system-specific site study.`],
     ["Crops", `${labelFarmUse(inputs.farmUse)} is the selected farm function; confirm the operator and production plan.`],
     ["Compatibility", `${inputs.communityType} setting · ${inputs.energyUse.toLowerCase()} · agricultural operations must keep working.`],
     ["Collaboration", `${plannerAnswered()} of 7 planner questions have evidence recorded.`],
@@ -231,7 +238,7 @@ function renderHorticulture() {
   if (!current) return;
   const key = current.place.horticulture_climate;
   const item = DATA.horticulture?.[key] || {};
-  els.horticultureTitle.textContent = key ? `${key} agrivoltaics` : "Climate profile not found";
+  els.horticultureTitle.textContent = key ? `${key} land + crop context` : "Climate profile not found";
   els.climateDetails.textContent = item.details || "The workbook does not include a horticultural narrative for this climate match.";
   els.climateFindings.textContent = item.findings || "Use local extension, producer, and site evidence to assess crops and growing conditions.";
   const tags = plantingItems(item.potential_planting);
@@ -249,11 +256,49 @@ function renderCases() {
   const source = solar ? (DATA.cases || []) : (DATA.otherCases || []).filter(caseItem => systemCaseMatch(caseItem, current.inputs.system));
   const ranked = source.map(caseItem => ({ caseItem, ...scoreCase(caseItem, solar) })).sort((a, b) => b.score - a.score || String(a.caseItem.name).localeCompare(String(b.caseItem.name)));
   const limit = els.caseLimit.value === "all" ? ranked.length : Number(els.caseLimit.value || 6);
+  renderCaseMap(ranked);
   if (!ranked.length) {
-    els.caseResults.innerHTML = `<p class="notice">No workbook case uses this system label. Use the technical resources and add a verified local precedent.</p>`;
+    els.caseResults.innerHTML = `<p class="notice">No case record uses this system label. Use the technical resources and add a verified local precedent.</p>`;
     return;
   }
   els.caseResults.innerHTML = ranked.slice(0, limit).map(({ caseItem, score, reasons }) => caseCard(caseItem, score, reasons)).join("");
+}
+
+
+function renderCaseMap(ranked) {
+  const mapped = ranked.map(item => {
+    const profile = zipProfile(String(item.caseItem.zip || "").padStart(5, "0"));
+    const territoryFallback = !profile && item.caseItem.state_abbr === "USVI" ? { x: 826, y: 478 } : null;
+    const point = profile ? mapPoint(profile.latitude, profile.longitude, profile.state_abbr) : territoryFallback;
+    return { ...item, profile, point, locationKind: profile ? "ZIP centroid" : territoryFallback ? "territory-level locator" : "unmapped" };
+  }).filter(item => item.point);
+  const placePoint = mapPoint(current.place.latitude, current.place.longitude, current.place.state_abbr);
+  const caseMarkers = mapped.map(({ caseItem, point, profile, locationKind }) => {
+    const local = profile?.state_abbr === current.place.state_abbr;
+    const label = `${caseItem.name} — ${[caseItem.place, caseItem.state_abbr || caseItem.state].filter(Boolean).join(", ")} (${locationKind})`;
+    return `<circle class="case-map-marker${local ? " is-local" : ""}" cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="${local ? 5.5 : 4.2}"><title>${escapeHtml(label)}</title></circle>`;
+  }).join("");
+  const placeMarker = placePoint ? `<g class="user-map-marker" transform="translate(${placePoint.x.toFixed(2)} ${placePoint.y.toFixed(2)})"><circle class="user-map-halo" r="12"></circle><circle class="user-map-dot" r="6"><title>${escapeHtml(`Selected ZIP ${current.inputs.zip}: ${els.placeTitle.textContent}`)}</title></circle></g>` : "";
+  els.caseMapMarkers.innerHTML = `${caseMarkers}${placeMarker}`;
+  els.mapCaseCount.textContent = `${mapped.length} mapped ${mapped.length === 1 ? "case" : "cases"}`;
+  const localCount = mapped.filter(item => item.profile?.state_abbr === current.place.state_abbr).length;
+  const territoryCount = mapped.filter(item => item.locationKind === "territory-level locator").length;
+  els.mapSummary.textContent = `${els.placeTitle.textContent} is shown at the approximate ZIP centroid. The map displays ${mapped.length} ${SYSTEM_LABELS[current.inputs.system].toLowerCase()} case ${mapped.length === 1 ? "location" : "locations"}${localCount ? `, including ${localCount} in ${current.place.state}` : ""}${territoryCount ? `; ${territoryCount} case without a ZIP uses a labeled territory-level locator` : ""}. Hover or focus a point for the case name.`;
+}
+
+function mapPoint(latitude, longitude, stateAbbr) {
+  let lat = Number(latitude);
+  let lon = Number(longitude);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (stateAbbr === "AK") {
+    if (lon > 0) lon -= 360;
+    return { x: 25 + (lon + 180) / 51 * 210, y: 390 + (72 - lat) / 21 * 110 };
+  }
+  if (stateAbbr === "HI") return { x: 265 + (lon + 161) / 7 * 105, y: 405 + (23 - lat) / 5 * 75 };
+  if (stateAbbr === "PR") return { x: 735 + (lon + 68) / 3.5 * 90, y: 425 + (19 - lat) / 1.5 * 50 };
+  if (stateAbbr === "VI") return { x: 826, y: 478 };
+  if (lon < -125 || lon > -66 || lat < 24 || lat > 50) return null;
+  return { x: 25 + (lon + 125) / 59 * 810, y: 20 + (50 - lat) / 26 * 350 };
 }
 
 function systemCaseMatch(caseItem, system) {
@@ -283,7 +328,7 @@ function caseCard(caseItem, score, reasons) {
   const imageNote = caseItem.image_note ? `<p class="case-image-note">${escapeHtml(caseItem.image_note)}</p>` : "";
   const currentFacts = caseItem.current_facts ? `<p><strong>Current project note:</strong> ${escapeHtml(caseItem.current_facts)} ${caseItem.current_source ? `<a href="${escapeAttr(caseItem.current_source)}" target="_blank" rel="noopener">Official update</a>` : ""}</p>` : "";
   return `
-    <article class="case-card">
+    <article class="case-card" id="case-${escapeAttr(fileStem(caseItem.name || "case"))}">
       <img class="case-photo" src="${escapeAttr(image)}" alt="${escapeAttr(imageAlt)}" loading="lazy">
       <div class="case-body">
         <h4>${escapeHtml(caseItem.name || "Case study")}</h4>
@@ -386,14 +431,15 @@ function downloadMemo() {
     <h1>Local Foods, Local Energy Screening Memo</h1>
     <p><strong>Location:</strong> ${escapeHtml(els.placeTitle.textContent)} · ZIP ${escapeHtml(current.inputs.zip)} · ${escapeHtml(current.place.county || "County not found")}</p>
     <p><strong>Profile:</strong> ${escapeHtml(SYSTEM_LABELS[current.inputs.system])} · ${escapeHtml(labelFarmUse(current.inputs.farmUse))} · ${escapeHtml(number(current.inputs.area))} sq ft · ${escapeHtml(current.inputs.energyUse)}</p>
-    <h2>Workbook screen</h2>
-    <table><tr><th>USDA zone</th><th>Climate</th><th>Solar GHI</th><th>Panel area screen</th><th>Annual solar output</th><th>Utility</th></tr><tr><td>${escapeHtml(current.place.usda_zone || "—")}</td><td>${escapeHtml(current.place.climate || "—")}</td><td>${escapeHtml(formatDecimal(current.place.solar_ghi,2))}</td><td>${escapeHtml(current.panels === null ? "—" : number(current.panels))}</td><td>${escapeHtml(current.annualMwh === null ? "—" : formatDecimal(current.annualMwh,1)+" MWh")}</td><td>${escapeHtml(current.place.utility_provider || "—")}</td></tr></table>
+    <h2>Agro-energy screen</h2>
+    <table><tr><th>USDA zone</th><th>Climate</th><th>Solar GHI</th><th>Illustrative modules</th><th>Capacity</th><th>Annual solar output</th><th>Gross electricity value</th><th>Utility</th></tr><tr><td>${escapeHtml(current.place.usda_zone || "—")}</td><td>${escapeHtml(current.place.climate || "—")}</td><td>${escapeHtml(formatDecimal(current.place.solar_ghi,2))}</td><td>${escapeHtml(current.panels === null ? "—" : number(current.panels))}</td><td>${escapeHtml(current.capacityKw === null ? "—" : formatDecimal(current.capacityKw,1)+" kW DC")}</td><td>${escapeHtml(current.annualMwh === null ? "—" : formatDecimal(current.annualMwh,1)+" MWh")}</td><td>${escapeHtml(current.annualValue === null ? "—" : currency(current.annualValue,0))}</td><td>${escapeHtml(current.place.utility_provider || "—")}</td></tr></table>
+    <p class="note"><strong>Solar assumptions:</strong> 35% land coverage, 21.5278 sq ft per 400 W module, and an 80% performance factor. Gross electricity value is modeled output times the selected utility rate; it is not profit, net revenue, lease income, or guaranteed bill savings.</p>
     <h2>Planner evidence screen</h2><table><tr><th>#</th><th>Question</th><th>Record</th></tr>${plannerRows}</table>
     <p><strong>Project notes:</strong> ${escapeHtml(els.projectNotes.value || "No notes entered.")}</p>
     <h2>Comparable cases</h2><table><tr><th>#</th><th>Case</th><th>Place</th><th>Match</th><th>Why</th></tr>${caseRows}</table>
     <h2>Workbook funding/resource rows</h2><table><tr><th>#</th><th>Program</th><th>Type</th><th>Geography</th><th>Source</th></tr>${fundingTable}</table>
     <p class="note"><strong>Screening boundary:</strong> This memo is not an engineering, financial, zoning, legal, utility-interconnection, or permit determination. Verify every location field, program, law, system assumption, and site condition with the responsible professional or agency.</p>
-    <p>Generated ${escapeHtml(new Date().toLocaleString())} from the Local Foods, Local Energy web toolkit.</p>
+    <p>Generated ${escapeHtml(new Date().toLocaleString())} from the Local Foods, Local Energy web toolkit, built by EPR, P.C.'s Timberwing Systems.</p>
     </body></html>`;
   download(html, `${fileStem(els.placeTitle.textContent)}-local-foods-local-energy-screen.doc`, "application/msword;charset=utf-8");
 }

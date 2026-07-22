@@ -327,3 +327,33 @@ footer p { margin: 0; color: rgba(255,255,255,.78); }
   .tab-panel { display: block !important; page-break-before: always; }
   .tab-panel[hidden] { display: block !important; }
 }
+
+
+/* Agro-energy locator map */
+.locator-shell { margin-bottom: 24px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: #f8faf8; }
+.locator-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
+.locator-heading h4 { margin: 2px 0 0; color: var(--navy); font-size: 1.2rem; }
+.locator-heading > strong { color: var(--blue); white-space: nowrap; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 12px 20px; margin-bottom: 12px; color: var(--muted); font-size: .82rem; font-weight: 750; }
+.map-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend-dot { display: inline-block; width: 12px; height: 12px; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1px rgba(12,25,53,.25); }
+.legend-user { background: var(--red); }
+.legend-case { background: var(--blue); }
+.legend-local { background: #f0a51b; }
+.locator-map { position: relative; overflow: hidden; aspect-ratio: 860 / 520; border: 1px solid #b9c4cc; border-radius: 14px; background: #eaf1f5; }
+.locator-map > img, .locator-map > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.locator-map > svg { pointer-events: none; }
+.case-map-marker { fill: var(--blue); stroke: #fff; stroke-width: 1.8; opacity: .86; vector-effect: non-scaling-stroke; }
+.case-map-marker.is-local { fill: #f0a51b; stroke: var(--navy); stroke-width: 2.2; }
+.user-map-halo { fill: rgba(149,15,2,.20); stroke: var(--red); stroke-width: 2; }
+.user-map-dot { fill: var(--red); stroke: #fff; stroke-width: 2.5; }
+.map-summary { margin: 12px 0 4px; color: var(--navy); font-weight: 750; }
+.map-source { margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.45; }
+.method-grid code { white-space: normal; overflow-wrap: anywhere; }
+
+@media (max-width: 700px) {
+  .locator-shell { padding: 14px; }
+  .locator-heading { display: block; }
+  .locator-heading > strong { display: block; margin-top: 6px; }
+  .map-legend { gap: 8px 12px; }
+}

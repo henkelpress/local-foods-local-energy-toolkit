@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Screen food and energy opportunities on the same land using ZIP-level context, agrivoltaic cases, horticultural guidance, and planner review questions.">
+  <meta name="description" content="Screen agro-energy opportunities using ZIP-level context, land and crop guidance, national case studies, transparent solar assumptions, and planning questions.">
   <meta name="theme-color" content="#0c1935">
   <link rel="icon" href="./favicon.ico" sizes="any">
   <title>Local Foods, Local Energy Toolkit</title>
@@ -20,9 +20,9 @@
       <span>Food and energy planning on the same land</span>
     </div>
     <div class="hero-content">
-      <p class="eyebrow">Agrivoltaics and agroenergy screening toolkit</p>
-      <h1>Put one acre to work twice.</h1>
-      <p class="hero-copy">Turn a ZIP code and a few site facts into a transparent conversation about climate, crops, system scale, comparable projects, and the questions planners should ask next.</p>
+      <p class="eyebrow">Agro-energy planning and screening toolkit</p>
+      <h1>Plan food and energy on the same land.</h1>
+      <p class="hero-copy">Compare solar, wind, geothermal, bioenergy, water, and other farm-energy pathways—then connect local conditions to crops, precedents, resources, and planning action.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#screening">Screen a site</a>
         <button class="button button-ghost" id="loadDanville" type="button">Load Danville demo</button>
@@ -44,7 +44,7 @@
         <p class="eyebrow">A planning screen, not a permit decision</p>
         <h2>Start with purpose. Then test fit.</h2>
       </div>
-      <p>The toolkit keeps agricultural operations at the center. It organizes location data, workbook formulas, case evidence, and implementation questions without pretending that a ZIP-level screen replaces site engineering or local review.</p>
+      <p>The toolkit keeps agricultural operations at the center. It organizes place data, agro-energy pathways, case evidence, and implementation questions without pretending that a ZIP-level screen replaces site engineering, farm planning, utility review, or local approval.</p>
     </section>
 
     <section class="tool-layout" id="screening">
@@ -70,7 +70,7 @@
           <label>
             <span>Energy + farm system</span>
             <select id="systemType" name="systemType">
-              <option value="solar">Solar / agrivoltaics</option>
+              <option value="solar">Solar co-location / agrivoltaics</option>
               <option value="wind">Wind</option>
               <option value="geothermal">Geothermal</option>
               <option value="biofuels">Biofuels / biomass</option>
@@ -163,19 +163,20 @@
           <div><span id="metricZone">7b</span><label>USDA zone</label></div>
           <div><span id="metricClimate">Temperate</span><label>horticulture climate</label></div>
           <div><span id="metricSolar">4.51</span><label>solar GHI</label></div>
-          <div><span id="metricPanels">46</span><label>panel screen</label></div>
-          <div><span id="metricEnergy">155</span><label>MWh / year</label></div>
+          <div><span id="metricPanels">16</span><label>illustrative modules</label></div>
+          <div><span id="metricCapacity">6.4</span><label>kW DC</label></div>
+          <div><span id="metricEnergy">8.4</span><label>MWh / year</label></div>
         </section>
 
         <p class="guardrail"><strong>Screening aid:</strong> location matches and calculations organize early questions. Verify all conditions with the landowner, utility, engineer, agricultural operator, and local government.</p>
 
         <nav class="tabs" aria-label="Screening results">
           <button class="tab is-active" type="button" data-tab="snapshot" aria-selected="true">Snapshot</button>
-          <button class="tab" type="button" data-tab="horticulture" aria-selected="false">Horticulture</button>
-          <button class="tab" type="button" data-tab="cases" aria-selected="false">Cases</button>
+          <button class="tab" type="button" data-tab="horticulture" aria-selected="false">Land + crops</button>
+          <button class="tab" type="button" data-tab="cases" aria-selected="false">Map + cases</button>
           <button class="tab" type="button" data-tab="funding" aria-selected="false">Funding + resources</button>
-          <button class="tab" type="button" data-tab="planner" aria-selected="false">Planner screen</button>
           <button class="tab" type="button" data-tab="method" aria-selected="false">Method</button>
+          <button class="tab" type="button" data-tab="planner" aria-selected="false">Plan next steps</button>
         </nav>
 
         <section class="tab-panel is-active" data-panel="snapshot">
@@ -192,7 +193,7 @@
         <section class="tab-panel" data-panel="horticulture" hidden>
           <div class="section-heading">
             <p class="eyebrow">Climate + crops</p>
-            <h3 id="horticultureTitle">Temperate agrivoltaics</h3>
+            <h3 id="horticultureTitle">Temperate land + crop context</h3>
           </div>
           <div class="narrative-grid">
             <article><h4>Climate context</h4><p id="climateDetails"></p></article>
@@ -206,9 +207,26 @@
 
         <section class="tab-panel" data-panel="cases" hidden>
           <div class="section-heading split-heading">
-            <div><p class="eyebrow">Comparable projects</p><h3>Look for design lessons, not copies.</h3></div>
-            <label class="compact-field"><span>Show</span><select id="caseLimit"><option value="6">6 cases</option><option value="12">12 cases</option><option value="all">All cases</option></select></label>
+            <div><p class="eyebrow">Agro-energy locator</p><h3>See where the precedents are—and what they teach.</h3></div>
+            <label class="compact-field"><span>Show</span><select id="caseLimit"><option value="6">6 cases</option><option value="12" selected>12 cases</option><option value="all">All cases</option></select></label>
           </div>
+          <section class="locator-shell" aria-labelledby="locatorTitle">
+            <div class="locator-heading">
+              <div><p class="eyebrow">National context</p><h4 id="locatorTitle">Your ZIP and the selected agro-energy cases</h4></div>
+              <strong id="mapCaseCount">0 mapped cases</strong>
+            </div>
+            <div class="map-legend" aria-label="Map legend">
+              <span><i class="legend-dot legend-user"></i>Selected ZIP centroid</span>
+              <span><i class="legend-dot legend-case"></i>Case study</span>
+              <span><i class="legend-dot legend-local"></i>Case in selected state</span>
+            </div>
+            <div class="locator-map" role="img" aria-labelledby="locatorTitle mapSummary">
+              <img src="assets/us-states-locator.svg" alt="" aria-hidden="true">
+              <svg id="caseMapMarkers" viewBox="0 0 860 520" aria-hidden="true"></svg>
+            </div>
+            <p id="mapSummary" class="map-summary"></p>
+            <p class="map-source">Source: U.S. Census Bureau 2025 Cartographic Boundary Files and toolkit ZIP coordinates. A territory-level marker is used when a case has no ZIP. National locator only; not for parcel, boundary, or distance measurement. North is up; no scale is shown because distance is not evaluated. Map by EPR, P.C.'s Timberwing Systems · July 2026.</p>
+          </section>
           <div id="caseResults" class="case-grid"></div>
         </section>
 
@@ -223,10 +241,40 @@
           <div id="resourceResults" class="resource-list"></div>
         </section>
 
+
+
+        <section class="tab-panel" data-panel="method" hidden>
+          <div class="section-heading">
+            <p class="eyebrow">Transparent method</p>
+            <h3>What the screen does—and does not do.</h3>
+          </div>
+          <div class="method-grid">
+            <article><h4>Agro-energy scope</h4><p>The screen starts with the agricultural function, then compares solar co-location, wind, geothermal, bioenergy, water, manual power, wood, and oil/gas precedents. Agrivoltaics is one pathway—not the definition of the whole toolkit.</p></article>
+            <article><h4>Location match</h4><p>The ZIP crosswalk supplies place, hardiness, climate, utility-rate, transmission, solar, geothermal, and wind context. ZIP coordinates are approximate locator points, not parcel locations.</p></article>
+            <article><h4>Corrected solar screen</h4><p><code>modules = floor(area × 35% ÷ 21.5278 sq ft)</code></p><p><code>capacity = modules × 0.40 kW DC</code></p><p><code>annual kWh = capacity × GHI × 365 × 0.80</code></p><p><code>gross value = annual kWh × selected utility rate</code></p></article>
+            <article><h4>What “value” means</h4><p>The result is an illustrative gross electricity value. It is not profit, net revenue, lease income, or guaranteed bill savings. Export compensation may be lower than the displayed retail rate.</p></article>
+            <article><h4>Case ranking + map</h4><p>Cases gain transparent points for state, climate, hardiness zone, agricultural use, and community setting. The locator uses Census state boundaries and toolkit ZIP coordinates; a labeled territory-level marker is used for the USVI case that has no workbook ZIP. A high rank means “study this,” not “copy this.”</p></article>
+            <article><h4>Planning boundary</h4><p>The screen does not test parcel geometry, soils, wetlands, title, interconnection capacity, structural design, economics, tax treatment, or legal compliance. Use NREL PVWatts or engineering analysis when a project moves beyond screening.</p></article>
+          </div>
+          <div class="source-panel">
+            <h4>Primary method and policy references</h4>
+            <ul>
+              <li><a href="https://www.energy.gov/cmei/systems/agrivoltaics-solar-and-agriculture-co-location" target="_blank" rel="noopener">U.S. Department of Energy: Agrivoltaics</a></li>
+              <li><a href="https://pvwatts.nrel.gov/version_8.php" target="_blank" rel="noopener">NREL PVWatts: detailed preliminary solar production modeling</a></li>
+              <li><a href="https://www.census.gov/geographies/mapping-files/2025/geo/carto-boundary-file.html" target="_blank" rel="noopener">U.S. Census Bureau: 2025 Cartographic Boundary Files</a></li>
+              <li><a href="https://docs.nrel.gov/docs/fy22osti/83566.pdf" target="_blank" rel="noopener">NREL: The 5 Cs of Agrivoltaic Success Factors</a></li>
+              <li><a href="https://law.lis.virginia.gov/vacode/title10.1/chapter11.1/section10.1-1197.5/" target="_blank" rel="noopener">Virginia Code § 10.1-1197.5</a></li>
+              <li><a href="https://law.lis.virginia.gov/vacode/title15.2/chapter22/section15.2-2288.8/" target="_blank" rel="noopener">Virginia Code § 15.2-2288.8</a></li>
+              <li><a href="https://www.pecva.org/resources/publications/piedmont-view/the-friendliest-type-of-energy-generation-a-conversation-on-agrivoltaics/" target="_blank" rel="noopener">Piedmont Environmental Council: Roundabout Meadows</a></li>
+            </ul>
+          </div>
+        </section>
+
         <section class="tab-panel" data-panel="planner" hidden>
           <div class="section-heading">
-            <p class="eyebrow">Development review</p>
-            <h3>Seven questions before conditions.</h3>
+            <p class="eyebrow">Final action step</p>
+            <h3>Turn the screen into a planning worklist.</h3>
+            <p>Use this after reviewing the place, land and crops, case map, resources, and method. It records what is known, what is missing, and who must answer next.</p>
           </div>
           <div class="planner-progress"><span id="plannerCount">0 of 7</span><div><i id="plannerBar"></i></div><strong id="plannerStatus">Evidence not recorded</strong></div>
           <div id="plannerQuestions" class="planner-list"></div>
@@ -236,29 +284,6 @@
             <button id="printScreen" class="button button-secondary" type="button">Print screen</button>
           </div>
         </section>
-
-        <section class="tab-panel" data-panel="method" hidden>
-          <div class="section-heading">
-            <p class="eyebrow">Transparent method</p>
-            <h3>What the screen does—and does not do.</h3>
-          </div>
-          <div class="method-grid">
-            <article><h4>Location match</h4><p>The ZIP crosswalk supplies city, county, state, hardiness zone, climate, utility, electricity-rate, RTO, transmission-line, solar, geothermal, and wind context.</p></article>
-            <article><h4>Solar screen</h4><p><code>panels = floor(site area ÷ 21.5278216)</code></p><p><code>MWh = round(area × 0.09290304 × solar GHI × 365) ÷ 1000</code></p></article>
-            <article><h4>Case ranking</h4><p>Cases gain transparent points for state, climate, hardiness zone, agricultural use, and community-setting similarity. A high rank means “study this,” not “copy this.”</p></article>
-            <article><h4>Planning boundary</h4><p>The screen does not test parcel geometry, soils, wetlands, title, interconnection capacity, structural design, economics, tax treatment, or legal compliance.</p></article>
-          </div>
-          <div class="source-panel">
-            <h4>Primary method and policy references</h4>
-            <ul>
-              <li><a href="https://www.energy.gov/eere/solar/agrivoltaics-solar-and-agriculture-co-location" target="_blank" rel="noopener">U.S. Department of Energy: Agrivoltaics</a></li>
-              <li><a href="https://docs.nrel.gov/docs/fy22osti/83566.pdf" target="_blank" rel="noopener">NREL: The 5 Cs of Agrivoltaic Success Factors</a></li>
-              <li><a href="https://law.lis.virginia.gov/vacode/title10.1/chapter11.1/section10.1-1197.5/" target="_blank" rel="noopener">Virginia Code § 10.1-1197.5</a></li>
-              <li><a href="https://law.lis.virginia.gov/vacode/title15.2/chapter22/section15.2-2288.8/" target="_blank" rel="noopener">Virginia Code § 15.2-2288.8</a></li>
-              <li><a href="https://www.pecva.org/resources/publications/piedmont-view/the-friendliest-type-of-energy-generation-a-conversation-on-agrivoltaics/" target="_blank" rel="noopener">Piedmont Environmental Council: Roundabout Meadows</a></li>
-            </ul>
-          </div>
-        </section>
       </section>
     </section>
   </main>
@@ -266,7 +291,7 @@
   <footer>
     <div>
       <img src="assets/epr-logo.png" alt="EPR, P.C.">
-      <p><strong>Local Foods, Local Energy Toolkit</strong><br>Workbook-derived public screening application.</p>
+      <p><strong>Local Foods, Local Energy Toolkit</strong><br>Built by EPR, P.C.'s Timberwing Systems.</p>
     </div>
     <p>Compiled July 2026 · Verify live programs, local rules, utility conditions, and site data before acting.</p>
   </footer>

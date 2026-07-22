@@ -279,19 +279,30 @@ function scoreCase(caseItem, isSolar) {
 function caseCard(caseItem, score, reasons) {
   const links = (caseItem.links || []).slice(0, 3).map((url, index) => `<a href="${escapeAttr(url)}" target="_blank" rel="noopener">Source ${index + 1}</a>`).join("");
   const image = caseItem.image || "assets/case-default.webp";
+  const imageAlt = caseItem.image_alt || `${caseItem.name || "Case study"} image`;
+  const imageNote = caseItem.image_note ? `<p class="case-image-note">${escapeHtml(caseItem.image_note)}</p>` : "";
   const currentFacts = caseItem.current_facts ? `<p><strong>Current project note:</strong> ${escapeHtml(caseItem.current_facts)} ${caseItem.current_source ? `<a href="${escapeAttr(caseItem.current_source)}" target="_blank" rel="noopener">Official update</a>` : ""}</p>` : "";
   return `
     <article class="case-card">
-      <img class="case-photo" src="${escapeAttr(image)}" alt="" loading="lazy">
+      <img class="case-photo" src="${escapeAttr(image)}" alt="${escapeAttr(imageAlt)}" loading="lazy">
       <div class="case-body">
         <h4>${escapeHtml(caseItem.name || "Case study")}</h4>
         <p class="case-place">${escapeHtml([caseItem.place, caseItem.state_abbr || caseItem.state].filter(Boolean).join(", "))}</p>
+        ${imageNote}
         <div class="pill-row"><span class="pill">match ${score}</span>${reasons.map(reason => `<span class="pill">${escapeHtml(reason)}</span>`).join("")}</div>
         ${currentFacts}
         <p>${escapeHtml(trim(caseItem.overview || "Workbook case record", 420))}</p>
         <div class="case-links">${links}</div>
       </div>
     </article>`;
+}
+
+const NATIONAL_FUNDING_LABELS = new Set(["federal", "national", "all states", "united states"]);
+
+function fundingMatchesPlace(item, state) {
+  const itemState = String(item.state || "").trim().toLowerCase();
+  const selectedState = String(state || "").trim().toLowerCase();
+  return itemState === selectedState || NATIONAL_FUNDING_LABELS.has(itemState);
 }
 
 function renderFunding() {
@@ -301,7 +312,7 @@ function renderFunding() {
   const state = current.place.state;
   const rows = (DATA.funding || []).filter(item => {
     const itemState = String(item.state || "").toLowerCase();
-    const geographic = itemState === String(state || "").toLowerCase() || ["federal", "national", "all states", "united states"].some(term => itemState.includes(term)) || String(item.region || "") === region;
+    const geographic = fundingMatchesPlace(item, state);
     const text = Object.values(item).join(" ").toLowerCase();
     return geographic && (!query || text.includes(query));
   });
@@ -394,8 +405,7 @@ function rankedCasesForMemo() {
 }
 
 function fundingForMemo() {
-  const region = String(Number(current.place.epa_region || 0));
-  return (DATA.funding || []).filter(item => String(item.state || "").toLowerCase() === String(current.place.state || "").toLowerCase() || ["federal", "national"].some(term => String(item.state || "").toLowerCase().includes(term)) || String(item.region || "") === region).slice(0, 10);
+  return (DATA.funding || []).filter(item => fundingMatchesPlace(item, current.place.state)).slice(0, 10);
 }
 
 function plannerChecked(key) {

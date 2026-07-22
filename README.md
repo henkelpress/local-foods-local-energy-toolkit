@@ -8,10 +8,13 @@ A static, deterministic screening application for conversations about food and e
 
 - 40,502 ZIP-level profiles
 - USDA hardiness, climate, utility, rate, RTO, transmission, solar, geothermal, and wind context
-- 45 agrivoltaic case studies and 47 other agroenergy cases
+- 45 agrivoltaic case studies and 47 other agroenergy cases, each with source-provenanced imagery
 - 194 current-link-reviewed funding records and 18 technical resources
+- Exact-state funding filtering, with only genuinely national labels eligible across state lines
 - Transparent workbook-derived solar area and annual-output formulas
 - Horticultural guidance, planner questions, shareable screens, and downloadable screening memos
+
+Six case cards use clearly labeled representative project-source images where a site-specific photograph could not be verified. The other 86 use direct case images or images retained from cited case-study sources.
 
 ## Run locally
 

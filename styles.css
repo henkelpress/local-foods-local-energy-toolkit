@@ -249,6 +249,7 @@ fieldset { margin: 0; padding: 12px; border: 1px solid var(--line); border-radiu
 .case-body { padding: 19px; }
 .case-body h4 { margin-bottom: 5px; color: var(--navy); font-size: 1.2rem; }
 .case-place { margin-bottom: 12px; color: var(--muted); font-size: .88rem; }
+.case-image-note { margin: -4px 0 10px; color: #5b6670; font-size: .76rem; font-style: italic; }
 .case-body p { color: #3f4b56; }
 .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
 .pill { padding: 5px 8px; border-radius: 999px; background: var(--soft-blue); color: var(--blue); font-size: .74rem; font-weight: 850; }

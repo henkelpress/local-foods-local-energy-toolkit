@@ -24,14 +24,14 @@ const SYSTEM_LABELS = {
   oilgas: "Oil / gas",
 };
 
-const SYSTEM_TERMS = {
-  wind: ["wind"],
-  geothermal: ["geothermal"],
-  biofuels: ["biofuel", "biomass", "biodiesel", "digester"],
-  hydropower: ["water", "hydro"],
-  manual: ["manual"],
-  wood: ["wood", "charcoal", "timber"],
-  oilgas: ["oil", "gas"],
+const SYSTEM_CASE_TYPES = {
+  wind: "Wind",
+  geothermal: "Geothermal",
+  biofuels: "Biofuels/Biomass",
+  hydropower: "Water (Micro-Hydro)",
+  manual: "Manual",
+  wood: "Charcoal/Timber",
+  oilgas: "Oil/Gas",
 };
 
 const els = {
@@ -302,10 +302,10 @@ function mapPoint(latitude, longitude, stateAbbr) {
 }
 
 function systemCaseMatch(caseItem, system) {
-  const text = `${caseItem.energy_type || ""} ${caseItem.overview || ""}`.toLowerCase();
-  return (SYSTEM_TERMS[system] || [system]).some(term => text.includes(term));
+  const expectedType = SYSTEM_CASE_TYPES[system];
+  if (!expectedType) return false;
+  return String(caseItem.energy_type || "").trim().toLowerCase() === expectedType.toLowerCase();
 }
-
 function scoreCase(caseItem, isSolar) {
   let score = 0;
   const reasons = [];
